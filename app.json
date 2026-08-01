@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "Grey Spaces",
+    "slug": "grey-spaces",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./public/icon.png",
+    "splash": {
+      "image": "./public/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTabletMode": false,
+      "bundleIdentifier": "com.greyspaces.app",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Allow Grey Spaces to access your photos",
+        "NSCameraUsageDescription": "Allow Grey Spaces to access your camera",
+        "NSMicrophoneUsageDescription": "Allow Grey Spaces to access your microphone"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./public/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./public/favicon.ico"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "scheme": "greyspaces"
+  }
+}
