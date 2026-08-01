@@ -70,32 +70,62 @@ export function PostCard({
     return 'help-outline'
   }
 
+  const getModerationBadge = () => {
+    if (space === 'white') {
+      return {
+        icon: 'verified',
+        label: 'AI Moderated',
+        color: colors.success,
+        bgColor: '#D1FAE5',
+      }
+    }
+    if (space === 'grey') {
+      return {
+        icon: 'groups',
+        label: 'Community check in progress',
+        color: colors.badge,
+        bgColor: '#FEF3C7',
+      }
+    }
+    return {
+      icon: 'block',
+      label: 'Zero Moderation',
+      color: colors.badge,
+      bgColor: '#FEE2E2',
+    }
+  }
+
   const styles = StyleSheet.create({
     card: {
       backgroundColor: colors.card,
       marginHorizontal: 12,
       marginVertical: 8,
-      borderRadius: 12,
-      padding: 12,
+      borderRadius: 16,
+      padding: 14,
       borderWidth: 1,
       borderColor: colors.border,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: space === 'white' ? 0.05 : 0,
+      shadowRadius: 8,
+      elevation: space === 'white' ? 2 : 0,
     },
     header: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      alignItems: 'center',
+      alignItems: 'flex-start',
       marginBottom: 12,
     },
     userInfo: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 8,
+      gap: 10,
       flex: 1,
     },
     avatar: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: 44,
+      height: 44,
+      borderRadius: 22,
       backgroundColor: colors.border,
     },
     userDetails: {
@@ -206,6 +236,35 @@ export function PostCard({
           resizeMode="cover"
         />
       )}
+
+      {/* Moderation Badge */}
+      <View
+        style={{
+          backgroundColor: getModerationBadge().bgColor,
+          borderRadius: 8,
+          paddingHorizontal: 10,
+          paddingVertical: 8,
+          marginBottom: 12,
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 6,
+        }}
+      >
+        <MaterialIcons
+          name={getModerationBadge().icon as any}
+          size={14}
+          color={getModerationBadge().color}
+        />
+        <Text
+          style={{
+            fontSize: 11,
+            fontWeight: '500',
+            color: getModerationBadge().color,
+          }}
+        >
+          {getModerationBadge().label}
+        </Text>
+      </View>
 
       <View style={styles.footer}>
         <TouchableOpacity

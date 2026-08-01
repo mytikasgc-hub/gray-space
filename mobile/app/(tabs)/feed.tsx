@@ -6,11 +6,15 @@ import {
   SafeAreaView,
   ActivityIndicator,
   Text,
+  TouchableOpacity,
 } from 'react-native'
+import { MaterialIcons } from '@expo/vector-icons'
 import { useTheme, Space } from '../../lib/theme-context'
 import { useAuth } from '../../lib/auth-context'
 import { SpaceSelector } from '../../components/space-selector'
 import { PostCard } from '../../components/post-card'
+import { Header } from '../../components/header'
+import { CreatePostSheet } from '../../components/create-post-sheet'
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000'
 
@@ -21,6 +25,7 @@ export default function FeedScreen() {
   const [isLoading, setIsLoading] = useState(true)
   const [page, setPage] = useState(0)
   const [hasMore, setHasMore] = useState(true)
+  const [showCreatePost, setShowCreatePost] = useState(false)
 
   useEffect(() => {
     setPage(0)
@@ -110,10 +115,26 @@ export default function FeedScreen() {
       paddingVertical: 16,
       alignItems: 'center',
     },
+    floatingButton: {
+      position: 'absolute',
+      bottom: 90,
+      right: 16,
+      width: 56,
+      height: 56,
+      borderRadius: 28,
+      justifyContent: 'center',
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      elevation: 5,
+    },
   })
 
   return (
     <SafeAreaView style={styles.container}>
+      <Header title="GREY SPACE" showSearch showProfile />
       <SpaceSelector selectedSpace={space} onSpaceChange={handleSpaceChange} />
 
       {isLoading && page === 0 ? (
@@ -148,6 +169,27 @@ export default function FeedScreen() {
           }
         />
       )}
+
+      {/* Floating Create Button */}
+      <TouchableOpacity
+        style={[
+          styles.floatingButton,
+          { backgroundColor: colors.primary },
+        ]}
+        onPress={() => setShowCreatePost(true)}
+      >
+        <MaterialIcons name="add" size={28} color="#FFFFFF" />
+      </TouchableOpacity>
+
+      {/* Create Post Sheet */}
+      <CreatePostSheet
+        isVisible={showCreatePost}
+        onClose={() => setShowCreatePost(false)}
+        onPostCreated={() => {
+          setPage(0)
+          fetchPosts(0)
+        }}
+      />
     </SafeAreaView>
   )
 }
