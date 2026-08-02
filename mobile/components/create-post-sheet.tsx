@@ -13,7 +13,7 @@ import {
 import { MaterialIcons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
 import * as Camera from 'expo-camera'
-import { useTheme } from '../lib/theme-context'
+import { useTheme, SPACE_COPY, Space } from '../lib/theme-context'
 import { useAuth } from '../lib/auth-context'
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000'
@@ -29,8 +29,8 @@ export function CreatePostSheet({
   onClose,
   onPostCreated,
 }: CreatePostSheetProps) {
-  const { colors, space } = useTheme()
-  const { session } = useAuth()
+  const { colors, space, setSpace } = useTheme()
+  const { session, isGuest } = useAuth()
   const [content, setContent] = useState('')
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -69,28 +69,33 @@ export function CreatePostSheet({
     try {
       setIsLoading(true)
 
-      const formData = new FormData()
-      formData.append('content', content)
-      formData.append('space', space)
-
-      if (selectedImage) {
-        const filename = selectedImage.split('/').pop() || 'image.jpg'
-        const match = /\.(\w+)$/.exec(filename)
-        const type = match ? `image/${match[1]}` : 'image/jpeg'
-
-        formData.append('image', {
-          uri: selectedImage,
-          name: filename,
-          type,
-        } as any)
+      if (isGuest || !session?.accessToken) {
+        // Shell mode — local success so the create flow is demoable today
+        setContent('')
+        setSelectedImage(null)
+        onClose()
+        onPostCreated?.()
+        alert(
+          space === 'white'
+            ? 'Posted to White Space (AI will moderate & correct). Shell demo only.'
+            : space === 'grey'
+              ? 'Posted to Gray Space (community check may take time). Shell demo only.'
+              : 'Posted to Black Space (zero moderation). Shell demo only.'
+        )
+        return
       }
 
       const response = await fetch(`${API_URL}/api/posts`, {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${session?.accessToken}`,
+          Authorization: `Bearer ${session.accessToken}`,
+          'Content-Type': 'application/json',
         },
-        body: formData,
+        body: JSON.stringify({
+          content,
+          space,
+          image_url: selectedImage || undefined,
+        }),
       })
 
       if (!response.ok) {
@@ -216,16 +221,16 @@ export function CreatePostSheet({
       color: colors.text,
     },
     submitButton: {
-      backgroundColor: colors.primary,
-      borderRadius: 8,
-      paddingVertical: 12,
+      backgroundColor: colors.text,
+      borderRadius: 12,
+      paddingVertical: 14,
       alignItems: 'center',
       opacity: content.trim() ? 1 : 0.5,
     },
     submitButtonText: {
       fontSize: 16,
       fontWeight: '700',
-      color: '#FFFFFF',
+      color: colors.background === '#FFFFFF' ? '#FFFFFF' : '#111111',
     },
   })
 
@@ -251,7 +256,7 @@ export function CreatePostSheet({
 
           <ScrollView showsVerticalScrollIndicator={false}>
             <View style={styles.spaceSelector}>
-              {(['white', 'grey', 'black'] as const).map((s) => (
+              {(['white', 'grey', 'black'] as Space[]).map((s) => (
                 <TouchableOpacity
                   key={s}
                   style={[
@@ -259,6 +264,7 @@ export function CreatePostSheet({
                     space === s && styles.spaceTabActive,
                   ]}
                   disabled={isLoading}
+                  onPress={() => setSpace(s)}
                 >
                   <Text
                     style={[
@@ -266,7 +272,7 @@ export function CreatePostSheet({
                       space === s && styles.spaceTabTextActive,
                     ]}
                   >
-                    {s}
+                    {SPACE_COPY[s].label}
                   </Text>
                 </TouchableOpacity>
               ))}

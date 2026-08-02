@@ -1,50 +1,41 @@
-import React from 'react'
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { MaterialIcons } from '@expo/vector-icons'
-import { useTheme } from '../../lib/theme-context'
-
-const Tab = createBottomTabNavigator()
+import React, { useState } from 'react'
+import { Tabs } from 'expo-router'
+import { CustomTabBar } from '../../components/custom-tab-bar'
+import { CreatePostSheet } from '../../components/create-post-sheet'
 
 export default function TabsLayout() {
-  const { colors } = useTheme()
+  const [showCreatePost, setShowCreatePost] = useState(false)
 
   return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        headerShown: false,
-        tabBarShowLabel: false,
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.tabInactive,
-        tabBarStyle: {
-          backgroundColor: colors.background,
-          borderTopColor: colors.border,
-          borderTopWidth: 1,
-          height: 70,
-        },
-        tabBarIcon: ({ color, size }) => {
-          let iconName: any
+    <>
+      <Tabs
+        tabBar={(props) => (
+          <CustomTabBar
+            {...props}
+            onCreatePress={() => setShowCreatePost(true)}
+          />
+        )}
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
+        <Tabs.Screen name="feed" options={{ title: 'Home' }} />
+        <Tabs.Screen name="search" options={{ title: 'Search' }} />
+        <Tabs.Screen
+          name="create"
+          options={{
+            href: null,
+            title: 'Create',
+          }}
+        />
+        <Tabs.Screen name="notifications" options={{ title: 'Notifications' }} />
+        <Tabs.Screen name="messages" options={{ title: 'Messages' }} />
+      </Tabs>
 
-          if (route.name === 'feed') {
-            iconName = 'home'
-          } else if (route.name === 'search') {
-            iconName = 'search'
-          } else if (route.name === 'profile') {
-            iconName = 'person'
-          } else if (route.name === 'notifications') {
-            iconName = 'notifications'
-          } else if (route.name === 'messages') {
-            iconName = 'mail'
-          }
-
-          return <MaterialIcons name={iconName} size={size} color={color} />
-        },
-      })}
-    >
-      <Tab.Screen name="feed" options={{ title: 'Home' }} />
-      <Tab.Screen name="search" options={{ title: 'Search' }} />
-      <Tab.Screen name="profile" options={{ title: 'Profile' }} />
-      <Tab.Screen name="notifications" options={{ title: 'Notifications' }} />
-      <Tab.Screen name="messages" options={{ title: 'Messages' }} />
-    </Tab.Navigator>
+      <CreatePostSheet
+        isVisible={showCreatePost}
+        onClose={() => setShowCreatePost(false)}
+      />
+    </>
   )
 }

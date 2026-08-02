@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "Gray Space",
+    "slug": "gray-space",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "grayspace",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.grayspace.app",
+      "usesAppleSignIn": true,
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Allow Gray Space to access your photos",
+        "NSCameraUsageDescription": "Allow Gray Space to access your camera"
+      }
+    },
+    "plugins": [
+      "expo-router",
+      "expo-apple-authentication"
+    ]
+  }
+}

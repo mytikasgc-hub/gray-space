@@ -11,22 +11,28 @@ function RootLayoutNav() {
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#0B0B0C' }}>
+        <ActivityIndicator size="large" color="#FFFFFF" />
       </View>
     )
   }
 
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
+    <Stack screenOptions={{ headerShown: false }}>
       {session ? (
-        <Stack.Screen name="(tabs)" options={{ animationEnabled: false }} />
+        <>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen
+            name="profile"
+            options={{ presentation: 'card', animation: 'slide_from_right' }}
+          />
+          <Stack.Screen
+            name="post-details"
+            options={{ presentation: 'card', animation: 'slide_from_right' }}
+          />
+        </>
       ) : (
-        <Stack.Screen name="(auth)" options={{ animationEnabled: false }} />
+        <Stack.Screen name="(auth)" />
       )}
     </Stack>
   )

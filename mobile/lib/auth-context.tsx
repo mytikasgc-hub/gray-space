@@ -1,16 +1,31 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Session } from '@supabase/supabase-js'
+
+const GUEST_TOKEN = 'guest-demo-token'
 
 interface AuthContextType {
   session: { accessToken: string; refreshToken: string } | null
   user: any
   isLoading: boolean
+  isGuest: boolean
   signIn: (token: string, refreshToken: string, user: any) => Promise<void>
+  signInAsGuest: () => Promise<void>
   signOut: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
+
+const GUEST_USER = {
+  id: 'guest',
+  email: 'guest@gray.space',
+  username: 'you',
+  avatar_url: 'https://i.pravatar.cc/150?u=gray.space.guest',
+  verification_level: 'unverified',
+  bio: 'Exploring the three spaces',
+  trust_score: 0,
+  reputation_score: 0,
+  accuracy_percentage: 0,
+}
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<{
@@ -56,6 +71,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(userData)
   }
 
+  const signInAsGuest = async () => {
+    await signIn(GUEST_TOKEN, GUEST_TOKEN, GUEST_USER)
+  }
+
   const signOut = async () => {
     await AsyncStorage.removeItem('access_token')
     await AsyncStorage.removeItem('refresh_token')
@@ -65,8 +84,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null)
   }
 
+  const isGuest = session?.accessToken === GUEST_TOKEN
+
   return (
-    <AuthContext.Provider value={{ session, user, isLoading, signIn, signOut }}>
+    <AuthContext.Provider
+      value={{ session, user, isLoading, isGuest, signIn, signInAsGuest, signOut }}
+    >
       {children}
     </AuthContext.Provider>
   )

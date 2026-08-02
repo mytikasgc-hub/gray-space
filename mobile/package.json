@@ -1,0 +1,36 @@
+{
+  "name": "gray-space-mobile",
+  "version": "1.0.0",
+  "private": true,
+  "main": "expo-router/entry",
+  "scripts": {
+    "start": "expo start",
+    "ios": "expo start --ios",
+    "android": "expo start --android",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@expo/vector-icons": "^14.0.0",
+    "@react-native-async-storage/async-storage": "^1.23.1",
+    "@react-navigation/bottom-tabs": "^6.5.20",
+    "@react-navigation/native": "^6.1.17",
+    "@supabase/supabase-js": "^2.43.5",
+    "expo": "^51.0.0",
+    "expo-apple-authentication": "^6.1.2",
+    "expo-camera": "^15.0.0",
+    "expo-image-picker": "^15.0.0",
+    "expo-linking": "^6.3.0",
+    "expo-router": "^3.5.16",
+    "expo-status-bar": "^1.12.1",
+    "react": "18.2.0",
+    "react-native": "0.74.1",
+    "react-native-gesture-handler": "^2.15.0",
+    "react-native-reanimated": "^3.10.0",
+    "react-native-safe-area-context": "^4.9.0",
+    "react-native-screens": "^3.31.1"
+  },
+  "devDependencies": {
+    "@types/react": "~18.2.79",
+    "typescript": "^5.3.0"
+  }
+}
