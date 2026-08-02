@@ -1,6 +1,6 @@
 # Gray Space — Mobile (Expo)
 
-Expo SDK **57** app for Expo Go.
+Expo SDK **54** app for Expo Go (current iOS Expo Go max).
 
 ## Run
 
