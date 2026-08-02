@@ -11,6 +11,7 @@ import { useRouter } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useTheme } from '../lib/theme-context'
 import { useAuth } from '../lib/auth-context'
+import { BrandLogo } from './brand-logo'
 
 interface HeaderProps {
   showSearch?: boolean
@@ -70,7 +71,10 @@ export function Header({
           <View style={styles.side} />
         )}
 
-        <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
+        <View style={styles.brand}>
+          <BrandLogo size={22} />
+          <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
+        </View>
 
         {showSearch ? (
           <TouchableOpacity
@@ -113,6 +117,11 @@ const styles = StyleSheet.create({
   avatarFallback: {
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  brand: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   title: {
     fontSize: 17,

@@ -5,14 +5,16 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { AuthProvider, useAuth } from '../lib/auth-context'
 import { ThemeProvider } from '../lib/theme-context'
 import { ActivityIndicator, View } from 'react-native'
+import { BrandLogo } from '../components/brand-logo'
 
 function RootLayoutNav() {
   const { isLoading, session } = useAuth()
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#0B0B0C' }}>
-        <ActivityIndicator size="large" color="#FFFFFF" />
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#000000', gap: 20 }}>
+        <BrandLogo size={88} />
+        <ActivityIndicator size="small" color="#FFFFFF" />
       </View>
     )
   }

@@ -6,9 +6,9 @@
     "orientation": "portrait",
     "icon": "./public/icon.png",
     "splash": {
-      "image": "./public/splash.png",
+      "image": "./public/logo.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#000000"
     },
     "ios": {
       "supportsTabletMode": false,

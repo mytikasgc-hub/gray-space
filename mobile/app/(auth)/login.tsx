@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useAuth } from '../../lib/auth-context'
 import { useTheme, Space, SPACE_COPY } from '../../lib/theme-context'
 import { performAppleSignIn } from '../../lib/apple-auth'
+import { BrandLogo } from '../../components/brand-logo'
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000'
 
@@ -77,26 +78,11 @@ export default function LoginScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
+        <View style={styles.heroLogo}>
+          <BrandLogo size={112} />
+        </View>
         <Text style={styles.brand}>GRAY SPACE</Text>
         <Text style={styles.tagline}>Three spaces. Your choice.</Text>
-
-        <View style={styles.spheres}>
-          {SPACES.map((s, i) => (
-            <View
-              key={s}
-              style={[
-                styles.sphere,
-                {
-                  backgroundColor: sphereColor(s),
-                  marginLeft: i === 0 ? 0 : -18,
-                  zIndex: 3 - i,
-                  borderColor:
-                    s === 'black' ? '#333' : 'rgba(255,255,255,0.35)',
-                },
-              ]}
-            />
-          ))}
-        </View>
 
         <Text style={styles.choose}>CHOOSE YOUR SPACE.</Text>
 
@@ -198,6 +184,10 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 24,
   },
+  heroLogo: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
   brand: {
     color: '#FFFFFF',
     fontSize: 34,
@@ -211,18 +201,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 10,
     marginBottom: 28,
-  },
-  spheres: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 28,
-  },
-  sphere: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
-    borderWidth: 1,
   },
   choose: {
     color: '#FFFFFF',

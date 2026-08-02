@@ -6,6 +6,12 @@
     "orientation": "portrait",
     "scheme": "grayspace",
     "userInterfaceStyle": "automatic",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.grayspace.app",
@@ -14,6 +20,15 @@
         "NSPhotoLibraryUsageDescription": "Allow Gray Space to access your photos",
         "NSCameraUsageDescription": "Allow Gray Space to access your camera"
       }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#000000"
+      }
+    },
+    "web": {
+      "favicon": "./assets/icon.png"
     },
     "plugins": [
       "expo-router",

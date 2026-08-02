@@ -15,6 +15,7 @@ import * as ImagePicker from 'expo-image-picker'
 import * as Camera from 'expo-camera'
 import { useTheme, SPACE_COPY, Space } from '../lib/theme-context'
 import { useAuth } from '../lib/auth-context'
+import { BrandLogo } from './brand-logo'
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000'
 
@@ -244,7 +245,10 @@ export function CreatePostSheet({
       <View style={styles.overlay}>
         <View style={styles.sheet}>
           <View style={styles.header}>
-            <Text style={styles.title}>Create Post</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <BrandLogo size={28} />
+              <Text style={styles.title}>Create Post</Text>
+            </View>
             <TouchableOpacity
               style={styles.closeButton}
               onPress={onClose}

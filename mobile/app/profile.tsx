@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useTheme, SPACE_COPY } from '../lib/theme-context'
 import { useAuth } from '../lib/auth-context'
 import { MOCK_POSTS } from '../lib/mock-data'
+import { BrandLogo } from '../components/brand-logo'
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000'
 
@@ -110,7 +111,10 @@ export default function ProfileScreen() {
         <TouchableOpacity onPress={() => router.back()} hitSlop={12}>
           <MaterialIcons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
-        <Text style={[styles.topTitle, { color: colors.text }]}>Profile</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <BrandLogo size={22} />
+          <Text style={[styles.topTitle, { color: colors.text }]}>Profile</Text>
+        </View>
         <View style={{ width: 24 }} />
       </View>
 
