@@ -19,6 +19,13 @@ export default function TabsLayout() {
           headerShown: false,
         }}
       >
+        <Tabs.Screen
+          name="index"
+          options={{
+            href: null,
+            title: 'Home',
+          }}
+        />
         <Tabs.Screen name="feed" options={{ title: 'Home' }} />
         <Tabs.Screen name="search" options={{ title: 'Search' }} />
         <Tabs.Screen
