@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState } from 'react'
 import {
   View,
   Text,
@@ -12,7 +12,6 @@ import {
 } from 'react-native'
 import { MaterialIcons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
-import * as Camera from 'expo-camera'
 import { useTheme, SPACE_COPY, Space } from '../lib/theme-context'
 import { useAuth } from '../lib/auth-context'
 import { BrandLogo } from './brand-logo'
@@ -35,12 +34,16 @@ export function CreatePostSheet({
   const [content, setContent] = useState('')
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const [showCamera, setShowCamera] = useState(false)
-  const cameraRef = useRef(null)
 
   const pickImage = async () => {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync()
+    if (!permission.granted) {
+      alert('Photo library permission required')
+      return
+    }
+
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [4, 3],
       quality: 0.8,
@@ -52,13 +55,22 @@ export function CreatePostSheet({
   }
 
   const takePicture = async () => {
-    const permission = await Camera.requestCameraPermissionsAsync()
+    const permission = await ImagePicker.requestCameraPermissionsAsync()
     if (!permission.granted) {
       alert('Camera permission required')
       return
     }
 
-    setShowCamera(true)
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.8,
+    })
+
+    if (!result.canceled && result.assets[0]) {
+      setSelectedImage(result.assets[0].uri)
+    }
   }
 
   const handleCreatePost = async () => {
