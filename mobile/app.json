@@ -1,0 +1,66 @@
+{
+  "expo": {
+    "name": "Gray Space",
+    "slug": "gray-space",
+    "owner": "djoek47",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "grayspace",
+    "userInterfaceStyle": "automatic",
+    "icon": "./assets/icon.png",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.grayspace.app",
+      "usesAppleSignIn": true,
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Allow Gray Space to access your photos",
+        "NSCameraUsageDescription": "Allow Gray Space to access your camera"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#000000"
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/icon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-apple-authentication",
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash.png",
+          "backgroundColor": "#000000",
+          "imageWidth": 200
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Gray Space to access your photos",
+          "cameraPermission": "Allow Gray Space to access your camera"
+        }
+      ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "bc2d4d50-f8a8-44f6-9533-402b78c85ded"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/bc2d4d50-f8a8-44f6-9533-402b78c85ded",
+      "fallbackToCacheTimeout": 0
+    }
+  }
+}

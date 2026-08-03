@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "Grey Spaces",
-    "slug": "grey-spaces",
+    "name": "Gray Space",
+    "slug": "gray-space",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./public/icon.png",
     "splash": {
-      "image": "./public/splash.png",
+      "image": "./public/logo.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#000000"
     },
     "ios": {
       "supportsTabletMode": false,

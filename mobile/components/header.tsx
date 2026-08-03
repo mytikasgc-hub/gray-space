@@ -5,118 +5,128 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
-  SafeAreaView,
 } from 'react-native'
 import { MaterialIcons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useTheme } from '../lib/theme-context'
 import { useAuth } from '../lib/auth-context'
+import { BrandLogo } from './brand-logo'
 
 interface HeaderProps {
   showSearch?: boolean
   showProfile?: boolean
   title?: string
   onSearchPress?: () => void
-  onProfilePress?: () => void
 }
 
 export function Header({
   showSearch = true,
   showProfile = true,
-  title = 'GREY SPACE',
+  title = 'GRAY SPACE',
   onSearchPress,
-  onProfilePress,
 }: HeaderProps) {
   const router = useRouter()
-  const { colors, space } = useTheme()
+  const insets = useSafeAreaInsets()
+  const { colors } = useTheme()
   const { user } = useAuth()
 
-  const styles = StyleSheet.create({
-    container: {
-      backgroundColor: colors.background,
-      paddingHorizontal: 16,
-      paddingVertical: 12,
-      borderBottomWidth: space === 'white' ? 1 : 0,
-      borderBottomColor: colors.border,
-    },
-    content: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      gap: 12,
-    },
-    left: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 10,
-      flex: 1,
-    },
-    avatar: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
-      backgroundColor: colors.border,
-    },
-    title: {
-      fontSize: 16,
-      fontWeight: '600',
-      color: colors.text,
-    },
-    right: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 12,
-    },
-    searchButton: {
-      width: 36,
-      height: 36,
-      borderRadius: 18,
-      backgroundColor: colors.card,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    profileButton: {
-      width: 36,
-      height: 36,
-      borderRadius: 18,
-      overflow: 'hidden',
-      backgroundColor: colors.border,
-    },
-  })
-
   return (
-    <SafeAreaView style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        {
+          paddingTop: Math.max(insets.top, 8),
+          backgroundColor: colors.headerBg,
+        },
+      ]}
+    >
       <View style={styles.content}>
-        <View style={styles.left}>
-          {showProfile && (
-            <TouchableOpacity
-              onPress={onProfilePress}
-              style={styles.profileButton}
-            >
-              {user?.user_metadata?.avatar_url ? (
-                <Image
-                  source={{ uri: user.user_metadata.avatar_url }}
-                  style={styles.profileButton}
-                />
-              ) : (
-                <View style={styles.profileButton} />
-              )}
-            </TouchableOpacity>
-          )}
-          <Text style={styles.title}>{title}</Text>
+        {showProfile ? (
+          <TouchableOpacity
+            onPress={() => router.push('/profile')}
+            style={styles.side}
+            hitSlop={8}
+          >
+            {user?.avatar_url || user?.user_metadata?.avatar_url ? (
+              <Image
+                source={{
+                  uri: user?.avatar_url || user?.user_metadata?.avatar_url,
+                }}
+                style={styles.avatar}
+              />
+            ) : (
+              <View
+                style={[
+                  styles.avatar,
+                  styles.avatarFallback,
+                  { backgroundColor: colors.border },
+                ]}
+              >
+                <MaterialIcons name="person" size={20} color={colors.textSecondary} />
+              </View>
+            )}
+          </TouchableOpacity>
+        ) : (
+          <View style={styles.side} />
+        )}
+
+        <View style={styles.brand}>
+          <BrandLogo size={22} />
+          <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
         </View>
 
-        <View style={styles.right}>
-          {showSearch && (
-            <TouchableOpacity
-              style={styles.searchButton}
-              onPress={onSearchPress}
-            >
-              <MaterialIcons name="search" size={20} color={colors.text} />
-            </TouchableOpacity>
-          )}
-        </View>
+        {showSearch ? (
+          <TouchableOpacity
+            style={styles.side}
+            onPress={onSearchPress || (() => router.push('/(tabs)/search'))}
+            hitSlop={8}
+          >
+            <MaterialIcons name="search" size={24} color={colors.text} />
+          </TouchableOpacity>
+        ) : (
+          <View style={styles.side} />
+        )}
       </View>
-    </SafeAreaView>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 16,
+    paddingBottom: 10,
+  },
+  content: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    minHeight: 44,
+  },
+  side: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+  },
+  avatarFallback: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  brand: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  title: {
+    fontSize: 17,
+    fontWeight: '700',
+    letterSpacing: 1.6,
+    textAlign: 'center',
+  },
+})
