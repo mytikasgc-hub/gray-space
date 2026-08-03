@@ -1,10 +1,25 @@
 import React, { useState } from 'react'
-import { Tabs } from 'expo-router'
+import { Redirect, Tabs } from 'expo-router'
+import { ActivityIndicator, View } from 'react-native'
 import { CustomTabBar } from '../../components/custom-tab-bar'
 import { CreatePostSheet } from '../../components/create-post-sheet'
+import { useAuth } from '../../lib/auth-context'
 
 export default function TabsLayout() {
+  const { session, isLoading } = useAuth()
   const [showCreatePost, setShowCreatePost] = useState(false)
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, backgroundColor: '#000', justifyContent: 'center' }}>
+        <ActivityIndicator color="#fff" />
+      </View>
+    )
+  }
+
+  if (!session) {
+    return <Redirect href="/(auth)/login" />
+  }
 
   return (
     <>

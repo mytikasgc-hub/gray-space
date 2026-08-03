@@ -8,7 +8,7 @@ import {
 } from 'react-native'
 import { MaterialIcons } from '@expo/vector-icons'
 import { useTheme, SPACE_COPY } from '../lib/theme-context'
-import { formatRelativeTime } from '../lib/mock-data'
+import { formatRelativeTime, formatCount } from '../lib/mock-data'
 
 interface Post {
   id: string
@@ -23,6 +23,7 @@ interface Post {
   }
   likes?: { count: number }[]
   comment_count?: number
+  repost_count?: number
   community_reviewers?: number
   community_hours_left?: number
   reviewer_avatars?: string[]
@@ -47,15 +48,22 @@ export function PostCard({
 }: PostCardProps) {
   const { colors, space } = useTheme()
   const [liked, setLiked] = useState(isLiked)
+  const [likeTotal, setLikeTotal] = useState(likeCount)
   const [bookmarked, setBookmarked] = useState(false)
   const comments = post.comment_count ?? 0
+  const reposts = post.repost_count ?? Math.max(1, Math.round(comments * 0.6))
 
   const handleLike = () => {
     setLiked(!liked)
+    setLikeTotal((n) => (liked ? n - 1 : n + 1))
     onLike?.()
   }
 
-  const moderationLabel = SPACE_COPY[space].moderation
+  const isVerifiedAvatar =
+    space === 'white' && post.profiles.verification_level !== 'unverified'
+
+  const moderationIcon =
+    space === 'white' ? 'check-circle' : space === 'black' ? 'warning' : null
 
   return (
     <TouchableOpacity
@@ -67,33 +75,35 @@ export function PostCard({
         },
       ]}
       onPress={onPress}
-      activeOpacity={0.92}
+      activeOpacity={0.94}
     >
       <View style={styles.header}>
         <View style={styles.userInfo}>
-          {post.profiles.avatar_url ? (
-            <Image
-              source={{ uri: post.profiles.avatar_url }}
-              style={styles.avatar}
-            />
-          ) : (
-            <View style={[styles.avatar, { backgroundColor: colors.border }]} />
-          )}
+          <View style={styles.avatarWrap}>
+            {post.profiles.avatar_url ? (
+              <Image
+                source={{ uri: post.profiles.avatar_url }}
+                style={styles.avatar}
+              />
+            ) : (
+              <View style={[styles.avatar, { backgroundColor: colors.border }]} />
+            )}
+            {isVerifiedAvatar && (
+              <View
+                style={[
+                  styles.avatarBadge,
+                  { backgroundColor: colors.verifiedBadge, borderColor: colors.card },
+                ]}
+              >
+                <MaterialIcons name="check" size={10} color="#FFFFFF" />
+              </View>
+            )}
+          </View>
 
           <View style={styles.userDetails}>
-            <View style={styles.nameRow}>
-              <Text style={[styles.username, { color: colors.text }]}>
-                {post.profiles.username}
-              </Text>
-              {space === 'white' &&
-                post.profiles.verification_level !== 'unverified' && (
-                  <MaterialIcons
-                    name="verified"
-                    size={14}
-                    color={colors.success}
-                  />
-                )}
-            </View>
+            <Text style={[styles.username, { color: colors.text }]}>
+              {post.profiles.username}
+            </Text>
             <Text style={[styles.timestamp, { color: colors.textSecondary }]}>
               {formatRelativeTime(post.created_at)}
             </Text>
@@ -101,7 +111,7 @@ export function PostCard({
         </View>
 
         <TouchableOpacity hitSlop={12}>
-          <MaterialIcons name="more-horiz" size={22} color={colors.textSecondary} />
+          <MaterialIcons name="more-horiz" size={20} color={colors.textSecondary} />
         </TouchableOpacity>
       </View>
 
@@ -121,100 +131,100 @@ export function PostCard({
         <TouchableOpacity style={styles.action} onPress={handleLike} hitSlop={8}>
           <MaterialIcons
             name={liked ? 'favorite' : 'favorite-border'}
-            size={22}
+            size={20}
             color={liked ? colors.danger : colors.textSecondary}
           />
+          <Text
+            style={[
+              styles.actionCount,
+              { color: liked ? colors.danger : colors.textSecondary },
+            ]}
+          >
+            {formatCount(likeTotal)}
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.action} onPress={onComment} hitSlop={8}>
-          <MaterialIcons
-            name="chat-bubble-outline"
-            size={22}
-            color={colors.textSecondary}
-          />
+          <MaterialIcons name="chat-bubble-outline" size={19} color={colors.textSecondary} />
+          <Text style={[styles.actionCount, { color: colors.textSecondary }]}>
+            {formatCount(comments)}
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.action} hitSlop={8}>
-          <MaterialIcons
-            name="repeat"
-            size={22}
-            color={colors.textSecondary}
-          />
+          <MaterialIcons name="repeat" size={20} color={colors.textSecondary} />
+          <Text style={[styles.actionCount, { color: colors.textSecondary }]}>
+            {formatCount(reposts)}
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.action}
+          style={styles.bookmarkAction}
           onPress={() => setBookmarked(!bookmarked)}
           hitSlop={8}
         >
           <MaterialIcons
             name={bookmarked ? 'bookmark' : 'bookmark-border'}
-            size={22}
+            size={20}
             color={bookmarked ? colors.text : colors.textSecondary}
           />
         </TouchableOpacity>
-
-        {(likeCount > 0 || comments > 0) && (
-          <Text style={[styles.counts, { color: colors.textSecondary }]}>
-            {likeCount > 0 ? `${likeCount}` : ''}
-            {likeCount > 0 && comments > 0 ? ' · ' : ''}
-            {comments > 0 ? `${comments}` : ''}
-          </Text>
-        )}
       </View>
 
       {/* Moderation status — matches concept art */}
       <View
         style={[
           styles.moderation,
-          { backgroundColor: colors.badgeBg },
+          { backgroundColor: colors.moderationBg },
         ]}
       >
-        {space === 'white' && (
-          <View style={styles.modRow}>
-            <Text style={styles.modEmoji}>✅</Text>
-            <Text style={[styles.modText, { color: colors.badge }]}>
-              {moderationLabel}
+        {space === 'grey' ? (
+          <>
+            <View style={styles.modTopRow}>
+              <Text style={[styles.modTitle, { color: colors.moderationColor }]}>
+                {SPACE_COPY.grey.moderationTitle}
+              </Text>
+              <View style={styles.avatarStack}>
+                {(post.reviewer_avatars || []).slice(0, 3).map((uri, i) => (
+                  <Image
+                    key={uri + i}
+                    source={{ uri }}
+                    style={[
+                      styles.stackAvatar,
+                      { marginLeft: i === 0 ? 0 : -8, zIndex: 3 - i, borderColor: colors.moderationBg },
+                    ]}
+                  />
+                ))}
+              </View>
+              <MaterialIcons name="chevron-right" size={18} color={colors.textSecondary} />
+            </View>
+            <Text style={[styles.modSub, { color: colors.textSecondary }]}>
+              {post.community_hours_left ? `${post.community_hours_left}h left · ` : ''}
+              {post.community_reviewers ?? 0} {SPACE_COPY.grey.moderationSubtitle}
             </Text>
-          </View>
-        )}
-
-        {space === 'grey' && (
+          </>
+        ) : (
           <View style={styles.modRow}>
-            <View style={styles.avatarStack}>
-              {(post.reviewer_avatars || []).slice(0, 3).map((uri, i) => (
-                <Image
-                  key={uri + i}
-                  source={{ uri }}
-                  style={[
-                    styles.stackAvatar,
-                    { marginLeft: i === 0 ? 0 : -8, zIndex: 3 - i },
-                  ]}
-                />
-              ))}
+            <View
+              style={[
+                styles.modIconWrap,
+                { backgroundColor: colors.moderationIconBg },
+              ]}
+            >
+              <MaterialIcons
+                name={moderationIcon as any}
+                size={14}
+                color={colors.moderationColor}
+              />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.modText, { color: colors.badge }]}>
-                {moderationLabel}
-                {post.community_hours_left
-                  ? ` · ${post.community_hours_left}h left`
-                  : ''}
+              <Text style={[styles.modTitle, { color: colors.moderationColor }]}>
+                {SPACE_COPY[space].moderationTitle}
               </Text>
-              {post.community_reviewers ? (
-                <Text style={[styles.modSub, { color: colors.textSecondary }]}>
-                  {post.community_reviewers} reviewing
-                </Text>
-              ) : null}
+              <Text style={[styles.modSub, { color: colors.textSecondary, marginTop: 2 }]}>
+                {SPACE_COPY[space].moderationSubtitle}
+              </Text>
             </View>
-          </View>
-        )}
-
-        {space === 'black' && (
-          <View style={styles.modRow}>
-            <Text style={styles.modEmoji}>🚫</Text>
-            <Text style={[styles.modText, { color: colors.badge }]}>
-              {moderationLabel}
-            </Text>
           </View>
         )}
       </View>
@@ -242,18 +252,28 @@ const styles = StyleSheet.create({
     gap: 10,
     flex: 1,
   },
+  avatarWrap: {
+    width: 40,
+    height: 40,
+  },
   avatar: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
+  avatarBadge: {
+    position: 'absolute',
+    right: -2,
+    bottom: -2,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
   },
   userDetails: {
     flex: 1,
-  },
-  nameRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
   },
   username: {
     fontSize: 14,
@@ -278,51 +298,65 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 18,
+    gap: 22,
     paddingVertical: 4,
     marginBottom: 10,
   },
   action: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
     paddingVertical: 2,
   },
-  counts: {
-    marginLeft: 'auto',
+  actionCount: {
     fontSize: 12,
     fontWeight: '500',
+  },
+  bookmarkAction: {
+    marginLeft: 'auto',
+    paddingVertical: 2,
   },
   moderation: {
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 10,
   },
-  modRow: {
+  modTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 6,
   },
-  modEmoji: {
-    fontSize: 14,
+  modRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
   },
-  modText: {
-    fontSize: 12,
-    fontWeight: '600',
-    flex: 1,
-    lineHeight: 16,
+  modIconWrap: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    flexShrink: 1,
   },
   modSub: {
-    fontSize: 11,
-    marginTop: 2,
+    fontSize: 11.5,
+    lineHeight: 15,
   },
   avatarStack: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginLeft: 'auto',
     marginRight: 4,
   },
   stackAvatar: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
     borderWidth: 1.5,
-    borderColor: 'rgba(255,255,255,0.5)',
   },
 })

@@ -42,7 +42,7 @@ export function CustomTabBar({ state, descriptors, navigation, onCreatePress }: 
           styles.bar,
           {
             backgroundColor: colors.tabBar,
-            borderColor: colors.border,
+            borderColor: colors.tabBarBorder,
           },
         ]}
       >

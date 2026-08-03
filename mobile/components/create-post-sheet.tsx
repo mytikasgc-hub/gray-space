@@ -243,7 +243,7 @@ export function CreatePostSheet({
     submitButtonText: {
       fontSize: 16,
       fontWeight: '700',
-      color: colors.background === '#FFFFFF' ? '#FFFFFF' : '#111111',
+      color: colors.inverseText,
     },
   })
 

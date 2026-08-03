@@ -137,7 +137,7 @@ export default function ProfileScreen() {
           <View
             style={[
               styles.badge,
-              { backgroundColor: colors.badgeBg },
+              { backgroundColor: colors.moderationBg },
             ]}
           >
             <MaterialIcons
@@ -147,9 +147,9 @@ export default function ProfileScreen() {
                   : 'shield'
               }
               size={14}
-              color={colors.badge}
+              color={colors.moderationColor}
             />
-            <Text style={[styles.badgeText, { color: colors.badge }]}>
+            <Text style={[styles.badgeText, { color: colors.moderationColor }]}>
               {profile?.verification_level === 'verified'
                 ? 'Verified · White Space only'
                 : 'Unverified · verify in White Space'}

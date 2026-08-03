@@ -345,6 +345,16 @@ export const MOCK_MESSAGES: Record<string, MockMessage[]> = {
   ],
 }
 
+export function formatCount(n: number): string {
+  if (n < 1000) return `${n}`
+  if (n < 1000000) {
+    const k = n / 1000
+    return `${k % 1 === 0 ? k.toFixed(0) : k.toFixed(1)}K`
+  }
+  const m = n / 1000000
+  return `${m % 1 === 0 ? m.toFixed(0) : m.toFixed(1)}M`
+}
+
 export function formatRelativeTime(iso: string): string {
   const diffMs = Date.now() - new Date(iso).getTime()
   const mins = Math.floor(diffMs / 60000)

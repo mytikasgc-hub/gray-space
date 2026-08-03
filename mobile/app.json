@@ -2,6 +2,7 @@
   "expo": {
     "name": "Gray Space",
     "slug": "gray-space",
+    "owner": "djoek47",
     "version": "1.0.0",
     "orientation": "portrait",
     "scheme": "grayspace",

@@ -231,7 +231,7 @@ export default function MessagesScreen() {
                     <Text
                       style={[
                         styles.unreadText,
-                        { color: colors.background === '#FFFFFF' ? '#fff' : '#000' },
+                        { color: colors.inverseText },
                       ]}
                     >
                       {unread}
@@ -291,13 +291,7 @@ export default function MessagesScreen() {
                 >
                   <Text
                     style={{
-                      color: mine
-                        ? colors.background === '#6B7280'
-                          ? '#111'
-                          : colors.background === '#FFFFFF'
-                            ? '#fff'
-                            : '#000'
-                        : colors.text,
+                      color: mine ? colors.inverseText : colors.text,
                       fontSize: 15,
                       lineHeight: 20,
                     }}
@@ -347,7 +341,7 @@ export default function MessagesScreen() {
               <MaterialIcons
                 name="arrow-upward"
                 size={20}
-                color={colors.background === '#FFFFFF' ? '#fff' : '#000'}
+                color={colors.inverseText}
               />
             </TouchableOpacity>
           </View>

@@ -8,12 +8,14 @@ import {
   Alert,
   ScrollView,
 } from 'react-native'
+import { MaterialIcons, FontAwesome } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useAuth } from '../../lib/auth-context'
-import { useTheme, Space, SPACE_COPY } from '../../lib/theme-context'
+import { Space, SPACE_COPY, SPACE_DOT_COLOR } from '../../lib/theme-context'
 import { performAppleSignIn } from '../../lib/apple-auth'
 import { BrandLogo } from '../../components/brand-logo'
+import { SpaceCycleDiagram } from '../../components/space-cycle-diagram'
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000'
 
@@ -23,7 +25,7 @@ export default function LoginScreen() {
   const router = useRouter()
   const insets = useSafeAreaInsets()
   const { signIn, signInAsGuest } = useAuth()
-  const { space, setSpace } = useTheme()
+  const [selectedSpace, setSelectedSpace] = useState<Space>('white')
   const [isLoading, setIsLoading] = useState(false)
   const [guestLoading, setGuestLoading] = useState(false)
 
@@ -60,53 +62,71 @@ export default function LoginScreen() {
     }
   }
 
-  const sphereColor = (s: Space) => {
-    if (s === 'white') return '#FFFFFF'
-    if (s === 'grey') return '#9CA3AF'
-    return '#111111'
-  }
-
   return (
-    <View style={[styles.root, { backgroundColor: '#0B0B0C' }]}>
+    <View style={styles.root}>
       <ScrollView
         contentContainerStyle={[
           styles.content,
           {
-            paddingTop: Math.max(insets.top, 24) + 24,
-            paddingBottom: Math.max(insets.bottom, 24) + 24,
+            paddingTop: Math.max(insets.top, 20) + 20,
+            paddingBottom: Math.max(insets.bottom, 20) + 20,
           },
         ]}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.heroLogo}>
-          <BrandLogo size={112} />
+        {/* Hero */}
+        <View style={styles.hero}>
+          <BrandLogo size={84} />
+          <Text style={styles.brand}>GRAY SPACE</Text>
+          <Text style={styles.tagline}>Three Spaces. Your Choice.</Text>
         </View>
-        <Text style={styles.brand}>GRAY SPACE</Text>
-        <Text style={styles.tagline}>Three spaces. Your choice.</Text>
 
-        <Text style={styles.choose}>CHOOSE YOUR SPACE.</Text>
+        {/* Compact legend — matches concept art top row */}
+        <View style={styles.legendRow}>
+          {SPACES.map((s) => (
+            <View key={s} style={styles.legendItem}>
+              <View
+                style={[
+                  styles.legendDot,
+                  {
+                    backgroundColor: SPACE_DOT_COLOR[s],
+                    borderColor:
+                      s === 'black' ? '#3F3F46' : 'rgba(255,255,255,0.35)',
+                  },
+                ]}
+              />
+              <Text style={styles.legendLabel}>{SPACE_COPY[s].label}</Text>
+              <Text style={styles.legendDesc}>{SPACE_COPY[s].legend}</Text>
+            </View>
+          ))}
+        </View>
+
+        {/* Step 1 — simple, single picker (no duplicate lists) */}
+        <View style={styles.stepHeader}>
+          <View style={styles.stepBadge}>
+            <Text style={styles.stepBadgeText}>1</Text>
+          </View>
+          <Text style={styles.stepTitle}>Pick a space to start in</Text>
+        </View>
 
         <View style={styles.spaceList}>
           {SPACES.map((s) => {
-            const active = space === s
+            const active = selectedSpace === s
             const copy = SPACE_COPY[s]
             return (
               <TouchableOpacity
                 key={s}
-                style={[
-                  styles.spaceRow,
-                  active && styles.spaceRowActive,
-                ]}
-                onPress={() => setSpace(s)}
+                style={[styles.spaceRow, active && styles.spaceRowActive]}
+                onPress={() => setSelectedSpace(s)}
                 activeOpacity={0.85}
               >
                 <View
                   style={[
                     styles.spaceDot,
                     {
-                      backgroundColor: sphereColor(s),
+                      backgroundColor: SPACE_DOT_COLOR[s],
                       borderColor:
-                        s === 'white' ? '#CCC' : 'rgba(255,255,255,0.2)',
+                        s === 'black' ? '#3F3F46' : 'rgba(255,255,255,0.3)',
                     },
                   ]}
                 />
@@ -114,32 +134,35 @@ export default function LoginScreen() {
                   <Text style={styles.spaceTitle}>{copy.title}</Text>
                   <Text style={styles.spaceSub}>{copy.subtitle}</Text>
                 </View>
-                <Text style={styles.chevron}>›</Text>
+                <View
+                  style={[
+                    styles.checkCircle,
+                    active && styles.checkCircleActive,
+                  ]}
+                >
+                  {active && (
+                    <MaterialIcons name="check" size={14} color="#000000" />
+                  )}
+                </View>
               </TouchableOpacity>
             )
           })}
         </View>
 
-        <View style={styles.detailCard}>
-          <Text style={styles.detailTitle}>{SPACE_COPY[space].title}</Text>
-          {space === 'white' && (
-            <Text style={styles.detailBody}>
-              Fully moderated by AI. Text is read and corrected for mistakes.
-              This is the only place you can be verified.
-            </Text>
-          )}
-          {space === 'grey' && (
-            <Text style={styles.detailBody}>
-              Half moderation. Community notes can take time — balanced freedom
-              with shared responsibility.
-            </Text>
-          )}
-          {space === 'black' && (
-            <Text style={styles.detailBody}>
-              Zero moderation. Conspiracy, raw takes, no limits — everything is
-              user responsibility.
-            </Text>
-          )}
+        <View style={styles.switchNote}>
+          <SpaceCycleDiagram size={40} />
+          <Text style={styles.switchNoteText}>
+            You can switch spaces anytime after signing in — nothing here is
+            permanent.
+          </Text>
+        </View>
+
+        {/* Step 2 — sign in */}
+        <View style={styles.stepHeader}>
+          <View style={styles.stepBadge}>
+            <Text style={styles.stepBadgeText}>2</Text>
+          </View>
+          <Text style={styles.stepTitle}>Sign in to continue</Text>
         </View>
 
         <TouchableOpacity
@@ -151,7 +174,10 @@ export default function LoginScreen() {
           {isLoading ? (
             <ActivityIndicator color="#000" />
           ) : (
-            <Text style={styles.appleText}> Sign in with Apple</Text>
+            <>
+              <FontAwesome name="apple" size={18} color="#000" />
+              <Text style={styles.appleText}>Continue with Apple</Text>
+            </>
           )}
         </TouchableOpacity>
 
@@ -164,13 +190,13 @@ export default function LoginScreen() {
           {guestLoading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.guestText}>Explore the shell</Text>
+            <Text style={styles.guestText}>Try it as a guest</Text>
           )}
         </TouchableOpacity>
 
         <Text style={styles.footnote}>
-          Shell mode uses sample posts, notifications, and messages so you can
-          walk the product today.
+          Guest mode shows sample posts, notifications, and messages so you can
+          explore before signing in.
         </Text>
       </ScrollView>
     </View>
@@ -180,38 +206,85 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
+    backgroundColor: '#0A0A0C',
   },
   content: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 22,
   },
-  heroLogo: {
+  hero: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 24,
   },
   brand: {
     color: '#FFFFFF',
-    fontSize: 34,
+    fontSize: 26,
     fontWeight: '800',
     letterSpacing: 3,
     textAlign: 'center',
+    marginTop: 14,
   },
   tagline: {
-    color: 'rgba(255,255,255,0.65)',
-    fontSize: 16,
+    color: 'rgba(255,255,255,0.6)',
+    fontSize: 14,
     textAlign: 'center',
-    marginTop: 10,
+    marginTop: 4,
+  },
+  legendRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 10,
     marginBottom: 28,
   },
-  choose: {
+  legendItem: {
+    flex: 1,
+    alignItems: 'flex-start',
+  },
+  legendDot: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    borderWidth: 1,
+    marginBottom: 6,
+  },
+  legendLabel: {
     color: '#FFFFFF',
-    fontSize: 13,
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 1,
+    marginBottom: 3,
+  },
+  legendDesc: {
+    color: 'rgba(255,255,255,0.5)',
+    fontSize: 10.5,
+    lineHeight: 14,
+  },
+  stepHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 12,
+  },
+  stepBadge: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stepBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 12,
     fontWeight: '700',
-    letterSpacing: 2,
-    marginBottom: 14,
+  },
+  stepTitle: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '700',
   },
   spaceList: {
     gap: 10,
-    marginBottom: 18,
+    marginBottom: 16,
   },
   spaceRow: {
     flexDirection: 'row',
@@ -220,13 +293,13 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 14,
     borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderWidth: 1.5,
+    borderColor: 'transparent',
   },
   spaceRowActive: {
-    backgroundColor: 'rgba(255,255,255,0.12)',
-    borderColor: 'rgba(255,255,255,0.28)',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderColor: 'rgba(255,255,255,0.35)',
   },
   spaceDot: {
     width: 18,
@@ -241,7 +314,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 14,
     fontWeight: '700',
-    letterSpacing: 0.6,
+    letterSpacing: 0.4,
   },
   spaceSub: {
     color: 'rgba(255,255,255,0.55)',
@@ -249,37 +322,42 @@ const styles = StyleSheet.create({
     marginTop: 3,
     lineHeight: 16,
   },
-  chevron: {
-    color: 'rgba(255,255,255,0.4)',
-    fontSize: 22,
-    fontWeight: '300',
+  checkCircle: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255,255,255,0.3)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  detailCard: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
+  checkCircleActive: {
+    backgroundColor: '#FFFFFF',
+    borderColor: '#FFFFFF',
+  },
+  switchNote: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: 'rgba(255,255,255,0.04)',
     borderRadius: 16,
-    padding: 16,
-    marginBottom: 24,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(255,255,255,0.1)',
+    padding: 12,
+    marginBottom: 28,
   },
-  detailTitle: {
-    color: '#FFFFFF',
-    fontSize: 13,
-    fontWeight: '700',
-    letterSpacing: 1,
-    marginBottom: 8,
-  },
-  detailBody: {
-    color: 'rgba(255,255,255,0.7)',
-    fontSize: 14,
-    lineHeight: 20,
+  switchNoteText: {
+    flex: 1,
+    color: 'rgba(255,255,255,0.55)',
+    fontSize: 12,
+    lineHeight: 17,
   },
   appleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
     backgroundColor: '#FFFFFF',
     borderRadius: 14,
     minHeight: 52,
-    alignItems: 'center',
-    justifyContent: 'center',
     marginBottom: 12,
   },
   appleText: {
@@ -293,7 +371,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.28)',
+    borderColor: 'rgba(255,255,255,0.25)',
     marginBottom: 16,
   },
   guestText: {
